@@ -10,7 +10,7 @@ from array import array
 gROOT.ProcessLine(
   "struct EventStruct{\
   Int_t ID;\
-  Float_t channels[50];\
+  Float_t channels[23];\
   Char_t time[19];\
   };");
 
@@ -35,7 +35,7 @@ tempFile = open('temp.temp')
 outputFile = TFile(outFile, "recreate")
 event = EventStruct()
 tree = TTree('tree','tree')
-tree.Branch('Channels', AddressOf(event,"channels"), 'channels[50]/F')
+tree.Branch('Channels', AddressOf(event,"channels"), 'channels[23]/F')
 tree.Branch('ID', AddressOf(event, 'ID'), 'ID/I')
 tree.Branch('time', AddressOf(event, 'time'), 'time/C')
 eventNum = -1
@@ -46,16 +46,13 @@ for line in tempFile:
     event.ID = eventNum
     count = 0
   if line[0] == ' ': #channel data
-    values = line[10:-2].split(" ")
+    values = line[7:-2].split(" ")
     for a in values:
       try:
-        f = int(a,16)
-        b = struct.unpack('f', struct.pack('>I',f))[0]
-        event.channels[count] = b
+        event.channels[count] = float(a)
         count += 1
-      except: 
-        #print("End of File")
-        continue
+      except:
+	continue
   if line[0] == "E":
     values = line.split(" ") #need timestamp from this data
     time = datetime.datetime.fromtimestamp(int(values[3][5:-1],16)).strftime('%Y-%m-%d %H:%M:%S')
