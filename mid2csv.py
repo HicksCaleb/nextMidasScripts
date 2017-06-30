@@ -11,9 +11,9 @@ import struct
 import datetime
 inFile = sys.argv[1]
 if len(sys.argv) > 2:
-  outFile = sys.argv[2] #take the arguments
+	outFile = sys.argv[2] #take the arguments
 else:
-  outFile = inFile.split(".")[0] + "Output" + ".csv"
+	outFile = inFile.split(".")[0] + "Output" + ".csv"
 subprocess.call("rm temp.temp &>/dev/null", shell = True) #make sure we don't have any files left over
 
 
@@ -30,23 +30,21 @@ event  = -1
 channel = -1
 outputFile.write('event,channel,time,value\n') #header
 for line in tempFile:
-  if line[0] == '-': #event incrememntation
-    event += 1
-    channel = -1
-  if line[0] == ' ': #channel data
-    values = line[10:-2].split(" ")
-    for a in values:
-      channel += 1
-      try:
-        f = int(a,16)
-        b = struct.unpack('f', struct.pack('>I',f))[0]
-        outputFile.write(str(event)+","+str(channel)+","+  time + "," + str(b)+ "\n")
-      except: 
-        #print("End of File")
-        continue
-  if line[0] == "E":
-    values = line.split(" ") #need timestamp from this data
-    time = datetime.datetime.fromtimestamp(int(values[3][5:-1],16)).strftime('%Y-%m-%d %H:%M:%S')
+	if line[0] == '-': #event incrememntation
+		event += 1
+		channel = -1
+	if line[0] == ' ': #channel data
+		values = line[10:-2].split(" ")
+		for a in values:
+			if len(a) > 0:
+				try:
+					channel += 1
+					outputFile.write(str(event)+","+str(channel)+","+  time + "," + a+ "\n")
+				except: 
+					continue
+	if line[0] == "E":
+		values = line.split(" ") #need timestamp from this data
+		time = datetime.datetime.fromtimestamp(int(values[3][5:-1],16)).strftime('%Y-%m-%d %H:%M:%S')
 
 subprocess.call('rm temp.temp', shell = True) #get rid of the temporary file
 outputFile.close()
