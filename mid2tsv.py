@@ -1,5 +1,7 @@
 #Converts the .mid file into a big table. Hopefully more efficient data format at the expense of easily accessing the information
-
+#June 2017
+#Caleb Hicks
+#My apologies for this code
 import sys
 import subprocess
 import struct
