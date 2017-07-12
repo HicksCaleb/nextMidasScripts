@@ -21,6 +21,7 @@ for ca,a in enumerate(sys.argv):
 		print('-h\t|\t-h\t\t|\tprints this incredibly helpful advice')
 		sys.exit()
 channelValues = [[] for a in range(23)]
+times = []
 plt.ion()
 fig = plt.figure()
 plt.axis([0,1,0,1])
@@ -40,8 +41,11 @@ while True:
 						values[count] = float(a)
 					except:
 						continue
+		if line[0] == 'E':
+			time = int(line.split(' ')[3][5:-1],16)
 	plt.color = 0,255,0
 	plt.clf()
+	times.append(time)
 	for ca,a in enumerate(values):
 		channelValues[ca].append(a)
 	for ca,a in enumerate(channel):
@@ -49,5 +53,8 @@ while True:
 			yvals = [parse(scale[ca].replace('x',str(b))) for b in channelValues[a][-plotRange:]]
 		else:
 			yvals = [parse(scale[ca].replace('x',str(b))) for b in channelValues[a]]
-		plt.plot([x for x in range(len(yvals))], yvals)
+		if len(times) > plotRange:
+			plt.plot([x-times[0] for x in times][-plotRange:], yvals)
+		else:
+			plt.plot([x-times[0] for x in times], yvals)
 	plt.draw()
