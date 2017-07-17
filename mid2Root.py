@@ -13,7 +13,7 @@ gROOT.ProcessLine( #Declare struct in c because root needs a c type
   "struct EventStruct{\
   Int_t ID;\
   Float_t channels[23];\
-  Char_t time[19];\
+  Int_t time;\
   };");
 
 
@@ -22,7 +22,7 @@ inFile = sys.argv[1]
 if len(sys.argv) > 2:
   outFile = sys.argv[2] #take the arguments
 else:
-  outFile = inFile.split(".")[0] + "Output" + ".root"
+  outFile = inFile[-12:-4] + "Output" + ".root"
 subprocess.call("rm temp.temp &>/dev/null", shell = True) #make sure we don't have any files left over
 
 
@@ -39,7 +39,7 @@ event = EventStruct()
 tree = TTree('tree','tree')#Create root datastructure from c struct
 tree.Branch('Channels', AddressOf(event,"channels"), 'channels[23]/F')
 tree.Branch('ID', AddressOf(event, 'ID'), 'ID/I')
-tree.Branch('time', AddressOf(event, 'time'), 'time/C')
+tree.Branch('time', AddressOf(event, 'time'), 'time/I')
 eventNum = -1
 for line in tempFile:
   if line[0] == '-': #event incrememntation
@@ -57,7 +57,8 @@ for line in tempFile:
 	continue
   if line[0] == "E":
     values = line.split(" ") #need timestamp from this data
-    time = datetime.datetime.fromtimestamp(int(values[3][5:-1],16)).strftime('%Y-%m-%d %H:%M:%S')
+    time = int(values[3][5:-1],16)
+	#time = datetime.datetime.fromtimestamp(int(values[3][5:-1],16)).strftime('%Y-%m-%d %H:%M:%S')
     event.time = time 
 subprocess.call('rm temp.temp', shell = True) #get rid of the temporary file
 
